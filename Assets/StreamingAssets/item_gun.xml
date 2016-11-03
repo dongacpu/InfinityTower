@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Gun>
+	<Field id="0" name="Pistol" damage="5" magazine="8" bullet="1" reload="0.5" velocity="5" shotdelay="0.5" range="15" buckshot="5" auto="false"/>
+	<Field id="1" name="Machine Gun" damage="20" magazine="100" bullet="1" reload="5" velocity="15" shotdelay="0.05" range="20" buckshot="15" auto="true"/>
+	<Field id="2" name="Sub Machine Gun" damage="10" magazine="25" bullet="1" reload="1.5" velocity="10" shotdelay="0.1" range="15" buckshot="8" auto="true"/>
+	<Field id="3" name="Rifle" damage="50" magazine="10" bullet="1" reload="3" velocity="15" shotdelay="1" range="25" buckshot="3" auto="false"/>
+	<Field id="4" name="Auto Rifle" damage="30" magazine="30" bullet="1" reload="2.5" velocity="15" shotdelay="0.15" range="25" buckshot="10" auto="true"/>
+	<Field id="5" name="Sniper Rifle" damage="200" magazine="5" bullet="1" reload="5" velocity="25" shotdelay="1.5" range="30" buckshot="0" auto="false"/>
+	<Field id="6" name="Shotgun" damage="15" magazine="6" bullet="8" reload="2" velocity="15" shotdelay="0.5" range="10" buckshot="15" auto="false"/>
+</Gun>
