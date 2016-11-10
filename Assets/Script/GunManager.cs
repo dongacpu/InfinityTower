@@ -2,12 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class ItemManager : MonoBehaviour {
-    private static ItemManager m_pInstance;
+public class GunManager : MonoBehaviour {
+    private static GunManager m_pInstance;
 
     private static object m_pLock = new object();
-
-    public static ItemManager INSTANCE
+    public Sprite[] sprite;
+    public static GunManager INSTANCE
     {
         get
         {
@@ -16,8 +16,9 @@ public class ItemManager : MonoBehaviour {
                 if(m_pInstance == null)
                 {
                         GameObject singleton = new GameObject();
-                        m_pInstance = singleton.AddComponent<ItemManager>();
-                        singleton.name = typeof(ItemManager).ToString();
+                        m_pInstance = singleton.AddComponent<GunManager>();
+                        singleton.name = typeof(GunManager).ToString();
+                        
                         DontDestroyOnLoad(singleton);  					
                 }
             }
@@ -26,43 +27,39 @@ public class ItemManager : MonoBehaviour {
         }
     }
 
-    // 파싱한 정보를 다 저장할꺼에요.
-    Dictionary<int, ItemInfo> m_dicData = new Dictionary<int, ItemInfo>();
-	// 아이템 추가.
-    public void AddItem(ItemInfo _cInfo)
-    {
-        // 아이템은 고유해야 되니까, 먼저 체크!
+    Dictionary<int, GunInfo> m_dicData = new Dictionary<int, GunInfo>();
+    public void AddItem(GunInfo _cInfo)
+    { 
         if (m_dicData.ContainsKey(_cInfo.ID)) return;
 
-        // 이제 아이템을 추가.
         m_dicData.Add(_cInfo.ID, _cInfo);
     }
-    // 하나의 아이템 얻기
-    public ItemInfo GetItem(int _nID)
+
+    public GunInfo GetItem(int _nID)
     {
-        // 있는지 체크 해야겠죠?
+
         if (m_dicData.ContainsKey(_nID))
             return m_dicData[_nID];
 
-        // 없으면 null 리턴!
         return null;
     }
-    // 전체 리스트 얻기
-    public Dictionary<int, ItemInfo> GetAllItems()
+
+    public Dictionary<int, GunInfo> GetAllItems()
     {
         return m_dicData;
     }
-    // 전체 갯수 얻기
+
     public int GetItemsCount()
     {
         return m_dicData.Count;
     }
 }
-public class ItemInfo
+public class GunInfo
 {
     private int m_iID;
     private string m_strName;
     private int m_iDamage;
+    private int m_ammo;
     private int m_iMagazine;
     private int m_iBullet;
     private float m_fReload;
@@ -71,6 +68,7 @@ public class ItemInfo
     private int m_iRange;
     private int m_iBuckshot;
     private bool m_bAuto;
+ 
 
     public int ID
     {
@@ -86,6 +84,10 @@ public class ItemInfo
     {
         set { m_iDamage = value; }
         get { return m_iDamage; }
+    }
+    public int AMMO {
+        set { m_ammo = value; }
+        get { return m_ammo; }
     }
     public int MAGAZINE
     {

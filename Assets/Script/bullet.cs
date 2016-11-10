@@ -12,6 +12,8 @@ public class bullet : MonoBehaviour {
     Vector3 mouseposition;
     Vector3 lookvector;
     GameObject bulletspot;
+    float velocity;
+    
     void Start()
     {
         s = GameObject.Find("gun").GetComponent<shoot>();
@@ -28,6 +30,7 @@ public class bullet : MonoBehaviour {
         transform.Rotate(Vector3.forward, buck);
         mouseposition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -Camera.main.transform.position.z));
         lookvector = Vector3.Normalize(mouseposition - transform.position);
+        velocity = s.p.velocity;
     }
 
     void Update()
@@ -48,19 +51,18 @@ public class bullet : MonoBehaviour {
         }
         if (direction)
         {
-            transform.Translate(lookvector * s.p.velocity*2 * Time.deltaTime);
-            range+=1*s.p.velocity*2*Time.deltaTime;
+            transform.Translate(lookvector * velocity*2 * Time.deltaTime);
+            range+=1*velocity*2*Time.deltaTime;
             
         }
        else
         {;
-            transform.Translate(lookvector * s.p.velocity *2* Time.deltaTime);
-            range += 1 * s.p.velocity * 2 * Time.deltaTime;
+            transform.Translate(lookvector * velocity *2* Time.deltaTime);
+            range += 1 * velocity * 2 * Time.deltaTime;
         }
        if (range >= s.p.range)
         {
             Destroy(this.gameObject);
-            Debug.Log("삭제");    
         }
     }
 

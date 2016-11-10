@@ -1,48 +1,86 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
-using System;
+using System.Collections.Generic;
 
 public class player : MonoBehaviour {
 
     public enum STATE_gun
     {
         havegun,
+        fullgun,
         nogun
     }
-
     public STATE_gun SG;
-
-    public int damage;
-    public int magazine;
-    public int bullet;
-    public float reload;
-    public int velocity;
-    public float shotdelay;
-    public int range;
-    public int buckshot;
-    public bool auto;
-    public bool guied;
-    public float guied_value;
-    public GameObject inventory;
+    public GameObject Inventory;
     public GameObject gameobject_dropgun;
+    #region public
+    public int damage;             //현재 총기 데미지
+    public int ammo;               //현재 총기 총알수
+    public int magazine;           //현재 총기 최대장탄수
+    public int bullet;             //현재 총기 발사 총알수
+    public float reload;           //현재 총기 재장전 시간
+    public int velocity;           //현재 총기 총알속도
+    public float shotdelay;        //현재 총기 발사 딜레이
+    public int range;              //현재 총기 총알 사정거리
+    public int buckshot;           //현재 총기 산탄도
+    public bool auto;              //현재 총기 자동유무
+    public bool guied;             //현재 총기 유도 유무
+    public float guied_value;      //현재 총기 유도 정도
+    public int magazine_current;   //현재 장탄수
+    #endregion
+    private bool check_drop;        //총 버림 체크
+    private float time_drop;        //총 버림 버튼 누른시간
+    private GameObject gun;         //총 오브젝트
+    private Collider get_item;      //먹은 총기
+    private GunManager GM;          //총기 매니저
+    private int num_currentgun_ID=0;   //현재 총기 ID
+    private int num_currentgun = 0;      //현재 총기 번호
+    private  int num_havegun = 0;    //가지고 있는 총기수
+    private int num_limitgun = 4;   //최대 총기수
+    
+   
 
-    private bool check_drop;
-    private float time_drop;
-    private GameObject gun;
-    public bool check_item;
-    // Use this for initialization
-    void Start() {
+    void Start()
+    {
         gun = GameObject.Find("gun");
+      //  magazine_current = new int[4];
     }
 
-    // Update is called once per frame
-    void Update() {
+    void Update()
+    {
+        if (num_havegun == 0)
+            SG = STATE_gun.nogun;
+        else if (num_havegun == num_limitgun)
+            SG = STATE_gun.fullgun;
+        else
+            SG = STATE_gun.havegun;
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            num_currentgun = 0;
+            change_gun();
+            
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            num_currentgun = 1;
+            change_gun();
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            num_currentgun = 2;
+            change_gun();
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            num_currentgun = 3;
+            change_gun();
+        }
         if (Input.GetKeyDown(KeyCode.I)) {
-            if (inventory.activeSelf)
-                inventory.SetActive(false);
+            if (Inventory.activeSelf)
+                Inventory.SetActive(false);
             else
-                inventory.SetActive(true);
+                Inventory.SetActive(true);
         }
         if (Input.GetKeyDown(KeyCode.G))
         {
@@ -57,34 +95,78 @@ public class player : MonoBehaviour {
             time_drop += Time.deltaTime;
         if (time_drop > 0.5)
         {
-            drop_gun();
             time_drop = 0;
+            drop_gun();
         }
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E)&&get_item!=null)
         {
-            check_item = true;
+            get_gun();
+        }
+    }
+    void get_gun() {
+        if (SG!=STATE_gun.fullgun) {
+            inventory.INSTANCE.AddItem(get_item.GetComponent<item>().ID);
+            inventory.INSTANCE.addammo(ammo);
+            Destroy(get_item.gameObject);
+            num_havegun++;
+            num_currentgun = num_havegun - 1;
+            change_gun();   
         }
     }
     void drop_gun() {
-        if (SG == STATE_gun.havegun)
+        if (SG != STATE_gun.nogun)
         {
-            SG = STATE_gun.nogun;
             Vector3 dropspot = transform.FindChild("gun").transform.position;
             GameObject dropgun = (GameObject)Instantiate(gameobject_dropgun, dropspot, Quaternion.identity);
-            dropgun.GetComponent<SpriteRenderer>().sprite = transform.FindChild("gun").GetComponent<SpriteRenderer>().sprite;
+            dropgun.GetComponent<item>().ID = num_currentgun_ID;
+            dropgun.GetComponent<item>().ammo = ammo;
             gun.GetComponent<SpriteRenderer>().enabled = false;
+            inventory.INSTANCE.deleteitem(num_currentgun);
+            num_havegun--;
+            if (num_havegun!=0)
+            {
+                if (num_currentgun == num_havegun)
+                {
+                    num_currentgun--;
+                    change_gun();
+                }
+                else
+                {
+                    change_gun();
+                }
+            }
         }
     }
+    void change_gun()
+    {
+        num_currentgun_ID = inventory.INSTANCE.Getitem(num_currentgun);
+        GunInfo g = GunManager.INSTANCE.GetItem(num_currentgun_ID);
+        transform.FindChild("gun").GetComponent<SpriteRenderer>().sprite = GunManager.INSTANCE.sprite[num_currentgun_ID];
+        transform.FindChild("gun").GetComponent<SpriteRenderer>().enabled = true;
+        damage = g.DAMAGE;
+        magazine =g.MAGAZINE;
+        bullet =g.BULLET;
+        reload = g.RELOAD;
+        velocity = g.VELOCITY;
+        shotdelay = g.SHOTDELAY;
+        range = g.RANGE;
+        buckshot = g.BUCKSHOT;
+        auto = g.AUTO;
+        ammo = g.AMMO;
+        magazine_current = magazine;
+}
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("item")&&check_item==true)
+        if (other.CompareTag("item"))
         {
-
+            get_item = other;
         }
     }
     void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("item"))
-            check_item = false;
+        {
+            get_item = null;
+        }
     }
 }

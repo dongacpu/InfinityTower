@@ -45,10 +45,11 @@ public class xmlparse : MonoBehaviour {
             {
                 foreach (XmlNode child in node.ChildNodes)
                 {
-                    ItemInfo item = new ItemInfo();
+                    GunInfo item = new GunInfo();
                     item.ID = int.Parse(child.Attributes.GetNamedItem("id").Value);
                     item.NAME = child.Attributes.GetNamedItem("name").Value;
                     item.DAMAGE = int.Parse(child.Attributes.GetNamedItem("damage").Value);
+                    item.AMMO = int.Parse(child.Attributes.GetNamedItem("ammo").Value);
                     item.MAGAZINE = int.Parse(child.Attributes.GetNamedItem("magazine").Value);
                     item.BULLET = int.Parse(child.Attributes.GetNamedItem("bullet").Value);
                     item.RELOAD = float.Parse(child.Attributes.GetNamedItem("reload").Value);
@@ -57,8 +58,9 @@ public class xmlparse : MonoBehaviour {
                     item.RANGE = int.Parse(child.Attributes.GetNamedItem("range").Value);
                     item.BUCKSHOT = int.Parse(child.Attributes.GetNamedItem("buckshot").Value);
                     item.AUTO=bool.Parse(child.Attributes.GetNamedItem("auto").Value);
-                    ItemManager.INSTANCE.AddItem(item);
+                    GunManager.INSTANCE.AddItem(item);
                 }
+                GunManager.INSTANCE.sprite= Resources.LoadAll<Sprite>("Image/gun");
             }
         } 
     }
