@@ -6,12 +6,22 @@ public class item : MonoBehaviour {
     Rigidbody rigidbody;
     public int ID;
     public int ammo;
+    public int magazine;
+    public reload_state RS;
 
     void Start ()
     {
         rigidbody = GetComponent<Rigidbody>();
         GetComponent<SpriteRenderer>().sprite = GunManager.INSTANCE.sprite[ID];
-        rigidbody.AddForce(Vector3.up*5, ForceMode.Impulse);    
+        rigidbody.AddForce(Vector3.up*5, ForceMode.Impulse);
+        if (ammo == 0)
+        {
+            ammo = GunManager.INSTANCE.GetItem(ID).AMMO;
+            magazine = GunManager.INSTANCE.GetItem(ID).MAGAZINE;
+            RS = reload_state.cant_reload;
+        }
+        else
+            Debug.Log("drop");
 	}
 	
 	void Update () {

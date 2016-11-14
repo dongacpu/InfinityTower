@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
-
+[System.Serializable]
 public class inventory : MonoBehaviour
 {
     private static inventory singletone;
@@ -28,52 +28,63 @@ public class inventory : MonoBehaviour
         }
     }
 
-    public List<int> gun = new List<int>();
-    public List<int> ammo = new List<int>();
-    public void AddItem(int num)
+    public List<Gun> gun = new List<Gun>();
+    public void addgun(int num, int num1, int num2, reload_state rs)
     {
-        gun.Add(num);
+        Gun temp = new Gun(num, num1, num2, rs);
+        gun.Add(temp);
     }
-    public int Getitem(int num)
+    public Gun getgun(int num)
     {
         return gun[num];
     }
-    public void deleteitem(int num) {
+    public void deletegun(int num)
+    {
         gun.RemoveAt(num);
     }
-    public void addammo(int num)
+    public void setgun(int num, int num1, int num2, int num3, reload_state rs)
     {
-        ammo.Add(num);
+        gun[num].AMMO = num1;
+        gun[num].MAGAZINE = num2;
+        gun[num].ID = num3;
+        gun[num].RS_ = rs;
+    }
+}
+[System.Serializable]
+public class Gun
+{
+    public int ammo;
+    public int magazine;
+    public int id;
+    public reload_state RS;
+    public Gun(int num, int num2, int num3, reload_state rs)
+    {
+        ammo = num;
+        magazine = num2;
+        id = num3;
+        RS = rs;
+    }
+    public int AMMO
+    {
+        get { return ammo; }
+        set { ammo = value; }
+    }
+    public int MAGAZINE
+    {
+        get { return magazine; }
+        set { magazine = value; }
+    }
+    public int ID
+    {
+        get { return id; }
+        set { id = value; }
+    }
+    public reload_state RS_
+    {
+        get { return RS; }
+        set { RS = value; }
     }
 
 }
 
 
-
-//  public int size;
-//  public Button button;
-/* 
-void Start () {
-
-     Debug.Log(GunManager.INSTANCE.GetItemsCount());
-      size = GunManager.INSTANCE.GetItemsCount();
-      Transform Content = transform.FindChild("Viewport").transform.FindChild("Content").transform;
-      if(size%2==0)
-          Content.GetComponent<RectTransform>().sizeDelta=new Vector2(0,size/2*125+25);
-      else
-          Content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, (size+1) / 2 * 125 + 25);
-      for (int i = 0; i < size; i++)
-      {
-              Button but = Instantiate(button) as Button;
-              but.transform.parent = Content;
-          if (i % 2 == 0)
-              but.transform.localPosition = new Vector3(125, -i/2*125-75);
-          else
-              but.transform.localPosition = new Vector3(375, -i/2 * 125 -75);
-      }
-}
-
-void Update () {
-
-}
-}*/

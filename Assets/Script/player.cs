@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
+
 public class player : MonoBehaviour {
 
     public enum STATE_gun
@@ -28,6 +29,9 @@ public class player : MonoBehaviour {
     public bool guied;             //현재 총기 유도 유무
     public float guied_value;      //현재 총기 유도 정도
     public int magazine_current;   //현재 장탄수
+    public int num_currentgun = 0;      //현재 총기 번호
+    public bool change = false;
+    public reload_state RS;
     #endregion
     private bool check_drop;        //총 버림 체크
     private float time_drop;        //총 버림 버튼 누른시간
@@ -35,9 +39,9 @@ public class player : MonoBehaviour {
     private Collider get_item;      //먹은 총기
     private GunManager GM;          //총기 매니저
     private int num_currentgun_ID=0;   //현재 총기 ID
-    private int num_currentgun = 0;      //현재 총기 번호
     private  int num_havegun = 0;    //가지고 있는 총기수
     private int num_limitgun = 4;   //최대 총기수
+
     
    
 
@@ -55,24 +59,43 @@ public class player : MonoBehaviour {
             SG = STATE_gun.fullgun;
         else
             SG = STATE_gun.havegun;
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha1)&&num_havegun>=1&&num_currentgun!=0)
         {
+            if (RS == reload_state.reloading)
+                inventory.INSTANCE.setgun(num_currentgun, ammo, magazine_current, num_currentgun_ID, reload_state.must_reload);
+            else
+                inventory.INSTANCE.setgun(num_currentgun, ammo, magazine_current, num_currentgun_ID, RS);
+            change = true;
             num_currentgun = 0;
             change_gun();
-            
         }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        if (Input.GetKeyDown(KeyCode.Alpha2) && num_havegun >= 2 && num_currentgun != 1)
         {
+            if (RS == reload_state.reloading)
+                inventory.INSTANCE.setgun(num_currentgun, ammo, magazine_current, num_currentgun_ID, reload_state.must_reload);
+            else
+                inventory.INSTANCE.setgun(num_currentgun, ammo, magazine_current, num_currentgun_ID, RS);
+            change = true;
             num_currentgun = 1;
             change_gun();
         }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        if (Input.GetKeyDown(KeyCode.Alpha3) && num_havegun >= 3 && num_currentgun != 2)
         {
+            if (RS == reload_state.reloading)
+                inventory.INSTANCE.setgun(num_currentgun, ammo, magazine_current, num_currentgun_ID, reload_state.must_reload);
+            else
+                inventory.INSTANCE.setgun(num_currentgun, ammo, magazine_current, num_currentgun_ID, RS);
+            change = true;
             num_currentgun = 2;
             change_gun();
         }
-        if (Input.GetKeyDown(KeyCode.Alpha4))
+        if (Input.GetKeyDown(KeyCode.Alpha4) && num_havegun >= 4 && num_currentgun != 3)
         {
+            if (RS == reload_state.reloading)
+                inventory.INSTANCE.setgun(num_currentgun, ammo, magazine_current, num_currentgun_ID, reload_state.must_reload);
+            else
+                inventory.INSTANCE.setgun(num_currentgun, ammo, magazine_current, num_currentgun_ID, RS);
+            change = true;
             num_currentgun = 3;
             change_gun();
         }
@@ -105,9 +128,13 @@ public class player : MonoBehaviour {
     }
     void get_gun() {
         if (SG!=STATE_gun.fullgun) {
-            inventory.INSTANCE.AddItem(get_item.GetComponent<item>().ID);
-            inventory.INSTANCE.addammo(ammo);
+            item temp = get_item.GetComponent<item>();
+            inventory.INSTANCE.addgun(temp.ammo, temp.magazine, temp.ID, temp.RS);
             Destroy(get_item.gameObject);
+            if (SG != STATE_gun.nogun)
+            {
+                inventory.INSTANCE.setgun(num_currentgun, ammo, magazine_current, num_currentgun_ID, RS);
+            }
             num_havegun++;
             num_currentgun = num_havegun - 1;
             change_gun();   
@@ -120,8 +147,14 @@ public class player : MonoBehaviour {
             GameObject dropgun = (GameObject)Instantiate(gameobject_dropgun, dropspot, Quaternion.identity);
             dropgun.GetComponent<item>().ID = num_currentgun_ID;
             dropgun.GetComponent<item>().ammo = ammo;
+            dropgun.GetComponent<item>().magazine = magazine_current;
+            if (RS == reload_state.reloading)
+                dropgun.GetComponent<item>().RS = reload_state.must_reload;
+            else
+                dropgun.GetComponent<item>().RS = RS;
+            change = true;
             gun.GetComponent<SpriteRenderer>().enabled = false;
-            inventory.INSTANCE.deleteitem(num_currentgun);
+            inventory.INSTANCE.deletegun(num_currentgun);
             num_havegun--;
             if (num_havegun!=0)
             {
@@ -139,7 +172,8 @@ public class player : MonoBehaviour {
     }
     void change_gun()
     {
-        num_currentgun_ID = inventory.INSTANCE.Getitem(num_currentgun);
+        Gun temp = inventory.INSTANCE.getgun(num_currentgun);
+        num_currentgun_ID = temp.ID;
         GunInfo g = GunManager.INSTANCE.GetItem(num_currentgun_ID);
         transform.FindChild("gun").GetComponent<SpriteRenderer>().sprite = GunManager.INSTANCE.sprite[num_currentgun_ID];
         transform.FindChild("gun").GetComponent<SpriteRenderer>().enabled = true;
@@ -152,9 +186,10 @@ public class player : MonoBehaviour {
         range = g.RANGE;
         buckshot = g.BUCKSHOT;
         auto = g.AUTO;
-        ammo = g.AMMO;
-        magazine_current = magazine;
-}
+        ammo = temp.AMMO;
+        magazine_current = temp.MAGAZINE;
+        RS = temp.RS_;
+    }
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("item"))

@@ -2,15 +2,21 @@
 using System.Collections;
 using UnityEngine.UI;
 
+public enum reload_state {
+    can_reload,
+    cant_reload,
+    must_reload,
+    reloading
+}   
+
 public class shoot : MonoBehaviour {
     public GameObject bullet;
     public player p;
     public Text magazine_current;
     public Slider reload_gagebar;
     public ParticleSystem muzzleflash;
-    public bool shoot_pos=true;
     public bool reload_check=true;
-    public float reload_time;
+    public float reload_time=0;
     public float reload_time_max;
 
 
@@ -18,29 +24,38 @@ public class shoot : MonoBehaviour {
 
 	void Start () {
         m = GameObject.Find("Player").GetComponent<move>();
-        reload_check = true;
 	}
 
 	void Update () {
         magazine_current.text =p.ammo+"/"+ p.magazine_current;
         reload_time_max = p.reload;
-        if (Input.GetKeyDown(KeyCode.Mouse0) &&reload_check&& p.magazine_current==0&&(p.SG==player.STATE_gun.havegun||p.SG==player.STATE_gun.fullgun))
+
+        if (Input.GetKeyDown(KeyCode.Mouse0)&&p.RS==reload_state.must_reload&& (p.SG == player.STATE_gun.havegun || p.SG == player.STATE_gun.fullgun))
+        {
+            Reload();
+        }
+        if (Input.GetKeyDown(KeyCode.R) && (p.SG == player.STATE_gun.havegun || p.SG == player.STATE_gun.fullgun)&&(p.RS==reload_state.can_reload|| p.RS == reload_state.must_reload))
         {
             Reload();
         }
         if (Input.GetKeyDown(KeyCode.Mouse0) &&!p.auto && (p.SG == player.STATE_gun.havegun || p.SG == player.STATE_gun.fullgun))
         {
-            Shoot();
+                Shoot();
         }
         if (Input.GetKey(KeyCode.Mouse0) && p.auto && (p.SG == player.STATE_gun.havegun || p.SG == player.STATE_gun.fullgun))
         {
-            Shoot();
+                Shoot();
+        
+            Debug.Log("b");
         }
-        if (Input.GetKeyDown(KeyCode.R) && (p.SG == player.STATE_gun.havegun || p.SG == player.STATE_gun.fullgun))
+        if (p.change)
         {
-            Reload();
+            reload_time = 0;
+            reload_gagebar.gameObject.SetActive(false);
+            p.change = false;
+            StopCoroutine("reload");
         }
-        if (!reload_check)
+        if (p.RS==reload_state.reloading)
         {
             reload_time += Time.deltaTime;
             reload_gagebar.value = reload_time/reload_time_max;
@@ -50,35 +65,38 @@ public class shoot : MonoBehaviour {
 	}
     void Shoot()
     {
-        if (shoot_pos)
+        if (!(p.RS==reload_state.must_reload||p.RS==reload_state.reloading))
         {
             for (int i = 0; i < p.bullet; i++)
                 Instantiate(bullet);
             p.magazine_current--;
+            p.RS = reload_state.can_reload;
             muzzleflash.Play();
             StartCoroutine("wait", p.shotdelay);
             
         }
     }
     IEnumerator wait(float time) {
-        shoot_pos = false;
+        p.RS = reload_state.reloading;
         yield return new WaitForSeconds(time);
-        if(reload_check)
-        shoot_pos = true;
+        
         if (p.magazine_current == 0)
-            shoot_pos = false;
+            p.RS = reload_state.must_reload;
+        else
+            p.RS = reload_state.can_reload;
     }
     IEnumerator reload(float time) {
+        int temp = p.num_currentgun;
         reload_time = 0;
         reload_gagebar.gameObject.SetActive(true);
-        reload_check = false;
-        shoot_pos = false;
+        p.RS = reload_state.reloading;
         yield return new WaitForSeconds(time);
-        reload_check = true;
-        reload_gagebar.gameObject.SetActive(false);
-        p.magazine_current = p.magazine;
-        p.ammo -= p.magazine;
-        shoot_pos = true;
+        if (temp==p.num_currentgun) {
+            reload_gagebar.gameObject.SetActive(false);
+            p.magazine_current = p.magazine;
+            p.ammo -= p.magazine;
+            p.RS = reload_state.cant_reload;
+        }
     }
     public void Reload()
     {
