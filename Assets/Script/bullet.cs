@@ -4,8 +4,9 @@ using System.Collections;
 public class bullet : MonoBehaviour {
     bool direction;
     bool guied;
+    public float damage;
     move m;
-    shoot s;
+    public shoot s;
     GameObject enemy;
     Vector3 Axis;
     float range=0;
@@ -19,6 +20,7 @@ public class bullet : MonoBehaviour {
         s = GameObject.Find("gun").GetComponent<shoot>();
         m = GameObject.Find("Player").GetComponent<move>();
         guied = s.p.guied;
+        damage = s.p.damage;
         enemy = GameObject.FindWithTag("Enemy");
         bulletspot = GameObject.Find("bulletspot");
         direction = m.direction;

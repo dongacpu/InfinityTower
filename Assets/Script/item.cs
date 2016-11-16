@@ -7,22 +7,38 @@ public class item : MonoBehaviour {
     public int ID;
     public int ammo;
     public int magazine;
+    public bool drop;
     public reload_state RS;
-
-    void Start ()
+    public enum itemtype{
+        active,
+        passive,
+        gun,
+        stuff
+    }
+    public itemtype IT;
+    void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
-        GetComponent<SpriteRenderer>().sprite = GunManager.INSTANCE.sprite[ID];
-        rigidbody.AddForce(Vector3.up*5, ForceMode.Impulse);
-        if (ammo == 0)
+        rigidbody.AddForce(Vector3.up * 5, ForceMode.Impulse);
+        if (IT == itemtype.gun)
         {
-            ammo = GunManager.INSTANCE.GetItem(ID).AMMO;
-            magazine = GunManager.INSTANCE.GetItem(ID).MAGAZINE;
-            RS = reload_state.cant_reload;
+            GetComponent<SpriteRenderer>().sprite = GunManager.INSTANCE.sprite[ID];
+            if (!drop)
+            {
+                ammo = GunManager.INSTANCE.GetItem(ID).AMMO;
+                magazine = GunManager.INSTANCE.GetItem(ID).MAGAZINE;
+                RS = reload_state.cant_reload;
+            }
         }
-        else
-            Debug.Log("drop");
-	}
+        else if (IT == itemtype.stuff)
+        {
+            GetComponent<SpriteRenderer>().sprite = StuffManager.INSTANCE.sprite[ID];
+        }
+        else if (IT == itemtype.passive)
+        {
+            GetComponent<SpriteRenderer>().sprite = StuffManager.INSTANCE.sprite[ID];    
+        }
+    }
 	
 	void Update () {
         if (rigidbody.velocity.y < -3)

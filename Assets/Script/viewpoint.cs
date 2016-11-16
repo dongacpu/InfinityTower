@@ -11,10 +11,9 @@ public class viewpoint : MonoBehaviour {
     }
     void Update()
     {
-        transform.position = Vector3.Lerp(transform.position, a.position, 2f * Time.deltaTime);
-        transform.Translate(0, 0, -10); //카메라를 원래 z축으로 이동
+        transform.position = new Vector3(Mathf.Lerp(transform.position.x,a.position.x, Time.deltaTime*2f), Mathf.Lerp(transform.position.y, a.position.y,  Time.deltaTime *2f), -10);
     }
-    /*
+    /*1
     public GameObject A;
     Transform a;
     void Start()

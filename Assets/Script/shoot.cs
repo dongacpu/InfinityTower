@@ -6,7 +6,8 @@ public enum reload_state {
     can_reload,
     cant_reload,
     must_reload,
-    reloading
+    reloading,
+    shooting
 }   
 
 public class shoot : MonoBehaviour {
@@ -27,7 +28,14 @@ public class shoot : MonoBehaviour {
 	}
 
 	void Update () {
-        magazine_current.text =p.ammo+"/"+ p.magazine_current;
+        if (p.num_havegun > 0)
+            magazine_current.gameObject.SetActive(true);
+        else
+            magazine_current.gameObject.SetActive(false);
+        if (p.ammo != -1)
+            magazine_current.text = p.ammo + "/" + p.magazine_current;
+        else
+            magazine_current.text = "무한 /" + p.magazine_current;
         reload_time_max = p.reload;
 
         if (Input.GetKeyDown(KeyCode.Mouse0)&&p.RS==reload_state.must_reload&& (p.SG == player.STATE_gun.havegun || p.SG == player.STATE_gun.fullgun))
@@ -45,8 +53,6 @@ public class shoot : MonoBehaviour {
         if (Input.GetKey(KeyCode.Mouse0) && p.auto && (p.SG == player.STATE_gun.havegun || p.SG == player.STATE_gun.fullgun))
         {
                 Shoot();
-        
-            Debug.Log("b");
         }
         if (p.change)
         {
@@ -65,7 +71,7 @@ public class shoot : MonoBehaviour {
 	}
     void Shoot()
     {
-        if (!(p.RS==reload_state.must_reload||p.RS==reload_state.reloading))
+        if (!(p.RS==reload_state.must_reload||p.RS==reload_state.reloading||p.RS==reload_state.shooting))
         {
             for (int i = 0; i < p.bullet; i++)
                 Instantiate(bullet);
@@ -77,7 +83,7 @@ public class shoot : MonoBehaviour {
         }
     }
     IEnumerator wait(float time) {
-        p.RS = reload_state.reloading;
+        p.RS = reload_state.shooting;
         yield return new WaitForSeconds(time);
         
         if (p.magazine_current == 0)
@@ -94,13 +100,15 @@ public class shoot : MonoBehaviour {
         if (temp==p.num_currentgun) {
             reload_gagebar.gameObject.SetActive(false);
             p.magazine_current = p.magazine;
-            p.ammo -= p.magazine;
+            if (p.ammo != -1)
+                p.ammo -= p.magazine;
             p.RS = reload_state.cant_reload;
         }
     }
     public void Reload()
     {
-        if(p.ammo>0)
-        StartCoroutine("reload", p.reload);
+        if (p.ammo > 0 || p.ammo == -1)
+            StartCoroutine("reload", p.reload);
+       
     }
 }

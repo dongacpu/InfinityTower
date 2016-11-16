@@ -14,6 +14,6 @@ public class movescene : MonoBehaviour {
 	}
     public void move()
     {
-        Application.LoadLevel("a");
+        Application.LoadLevel("lobby");
     }
 }

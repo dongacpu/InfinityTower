@@ -28,36 +28,48 @@ public class inventory : MonoBehaviour
         }
     }
 
-    public List<Gun> gun = new List<Gun>();
+    public List<InventoryGun> InventoryGun = new List<InventoryGun>();
+    public List<InventoryStuff> InventoryStuff = new List<InventoryStuff>();
+    public List<InventoryPassive> InventoryPassive = new List<InventoryPassive>();
     public void addgun(int num, int num1, int num2, reload_state rs)
     {
-        Gun temp = new Gun(num, num1, num2, rs);
-        gun.Add(temp);
+        InventoryGun temp = new InventoryGun(num, num1, num2, rs);
+        InventoryGun.Add(temp);
     }
-    public Gun getgun(int num)
+    public InventoryGun getInventoryGun(int num)
     {
-        return gun[num];
+        return InventoryGun[num];
     }
-    public void deletegun(int num)
+    public void deleteInventoryGun(int num)
     {
-        gun.RemoveAt(num);
+        InventoryGun.RemoveAt(num);
     }
-    public void setgun(int num, int num1, int num2, int num3, reload_state rs)
+    public void setInventoryGun(int num, int num1, int num2, int num3, reload_state rs)
     {
-        gun[num].AMMO = num1;
-        gun[num].MAGAZINE = num2;
-        gun[num].ID = num3;
-        gun[num].RS_ = rs;
+        InventoryGun[num].AMMO = num1;
+        InventoryGun[num].MAGAZINE = num2;
+        InventoryGun[num].ID = num3;
+        InventoryGun[num].RS_ = rs;
+    }
+    public void addstuff(int num)
+    {
+        InventoryStuff temp = new InventoryStuff(num);
+        InventoryStuff.Add(temp);
+    }
+    public void addpassive(int num)
+    {
+        InventoryPassive temp = new InventoryPassive(num);
+        InventoryPassive.Add(temp);
     }
 }
 [System.Serializable]
-public class Gun
+public class InventoryGun
 {
-    public int ammo;
-    public int magazine;
-    public int id;
-    public reload_state RS;
-    public Gun(int num, int num2, int num3, reload_state rs)
+    private int ammo;
+    private int magazine;
+    private int id;
+    private reload_state RS;
+    public InventoryGun(int num, int num2, int num3, reload_state rs)
     {
         ammo = num;
         magazine = num2;
@@ -86,5 +98,34 @@ public class Gun
     }
 
 }
+[System.Serializable]
+public class InventoryStuff
+{
+    private int id;
+    public InventoryStuff(int num3)
+    {
+        id = num3;
+    }
+    public int ID
+    {
+        get { return id; }
+        set { id = value; }
+    }
 
+}
+[System.Serializable]
+public class InventoryPassive
+{
+    private int id;
+    public InventoryPassive(int num3)
+    {
+        id = num3;
+    }
+    public int ID
+    {
+        get { return id; }
+        set { id = value; }
+    }
+
+}
 

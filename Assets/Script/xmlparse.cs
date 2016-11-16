@@ -61,6 +61,8 @@ public class xmlparse : MonoBehaviour {
                     GunManager.INSTANCE.AddItem(item);
                 }
                 GunManager.INSTANCE.sprite= Resources.LoadAll<Sprite>("Image/gun");
+                StuffManager.INSTANCE.sprite = Resources.LoadAll<Sprite>("Image/test");
+                PassiveManager.INSTANCE.sprite = Resources.LoadAll<Sprite>("Image/test");
             }
         } 
     }

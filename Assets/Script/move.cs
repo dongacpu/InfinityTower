@@ -40,17 +40,18 @@ public class move : MonoBehaviour {
         }
         if (Input.GetKey(KeyCode.A))
         {
-            if(direction)
-                transform.Translate(Vector2.left * Time.deltaTime * speed);
-            else
-                transform.Translate(Vector2.right * Time.deltaTime * speed);
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
             if (direction)
                 transform.Translate(Vector2.right * Time.deltaTime * speed);
             else
                 transform.Translate(Vector2.left * Time.deltaTime * speed);
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            
+            if (direction)
+                transform.Translate(Vector2.left * Time.deltaTime * speed);
+            else
+                transform.Translate(Vector2.right * Time.deltaTime * speed);
         }
         
     }
