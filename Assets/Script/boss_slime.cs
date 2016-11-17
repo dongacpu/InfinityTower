@@ -60,7 +60,7 @@ public class boss_slime: MonoBehaviour
     {
         if (fly)
         {
-            if (Time.time - flychecktime > 0.3f)
+            if (Time.time - flychecktime > 0.2f)
             {
                 if (Time.time - flychecktime > 3f)
                 {
@@ -141,7 +141,7 @@ public class boss_slime: MonoBehaviour
             Destroy(other.gameObject);
             HP -= other.transform.GetComponent<bullet>().damage;
             Debug.Log(HP);
-            //HPbar.value = HP / max_hp;
+            HPbar.value = HP / max_hp;
         }
     }
 }

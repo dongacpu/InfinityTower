@@ -36,6 +36,8 @@ public class player : MonoBehaviour {
     public reload_state RS;
     public SpriteRenderer[] partssprite;
     public float playerhp;
+    public float maxhp;
+    public Slider hpbar;
     #endregion
     private bool check_drop;        //총 버림 체크
     private float time_drop;        //총 버림 버튼 누른시간
@@ -55,6 +57,7 @@ public class player : MonoBehaviour {
 
     void Update()
     {
+        hpbar.value = playerhp / maxhp;
         if (playerhp <= 0)
         {
             Destroy(gameObject);

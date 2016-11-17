@@ -12,6 +12,7 @@ public class aim : MonoBehaviour {
         
         hotspot = new Vector2(cursortexture.width / 2, cursortexture.height / 2);
         Cursor.SetCursor(cursortexture, hotspot, CursorMode.Auto);
+        Cursor.visible = false;
 
     }
 
